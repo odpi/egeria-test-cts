@@ -9,7 +9,7 @@ jobs:
   kind:
     strategy:
       matrix:
-        connector: ['org.odpi.openmetadata.adapters.repositoryservices.inmemory.repositoryconnector.InMemoryOMRSRepositoryConnectorProvider','org.odpi.openmetadata.adapters.repositoryservices.        graphrepository.repositoryconnector.GraphOMRSRepositoryConnectorProvider']
+        connector: ['org.odpi.openmetadata.adapters.repositoryservices.inmemory.repositoryconnector.InMemoryOMRSRepositoryConnectorProvider','org.odpi.openmetadata.adapters.repositoryservices.graphrepository.repositoryconnector.GraphOMRSRepositoryConnectorProvider']
     runs-on: ubuntu-latest
     steps:
       - name: setup Helm
