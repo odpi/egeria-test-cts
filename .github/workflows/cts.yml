@@ -31,6 +31,8 @@ jobs:
         run: |
           helm repo add egeria https://odpi.github.io/egeria-charts
           helm install cts egeria/egeria-cts --set-string tut.connectorProvider=${{ matrix.connector }} --set-string imageDefaults.tag="3.14" --set-string resources.requests.memory=3Gi --set-string resources.limits.memory=5Gi --set records="1"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Check Chart installed & running
         run: |
           helm list
