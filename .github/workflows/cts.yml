@@ -39,11 +39,11 @@ jobs:
           kubectl get pods
       - name: Wait for CTS platform to be ready
         run: |
-          kubectl wait pods --selector=app.kubernetes.io/component=platform --for condition=Ready          
+          kubectl wait pods --selector=app.kubernetes.io/component=platform --for condition=Ready --timeout=2m
       - name: Wait for CTS results to be available
         # This waits for the report pod to go ready - this means results are ready
         run: |
-          kubectl wait pods --selector=app.kubernetes.io/component=report --for condition=Ready
+          kubectl wait pods --selector=app.kubernetes.io/component=report --for condition=Ready --timeout=600m
       - name: Gather CTS report
         run: |
           kubectl exec $(kubectl get pod -l app.kubernetes.io/component=report) -- sh -c 'cat /export/pipe' | tar -xvf -
