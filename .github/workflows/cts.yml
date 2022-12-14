@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright Contributors to the ODPi Egeria project.
+name: "Create connector test environment using KinD"
+on:
+  # Only manually for now
+  workflow_dispatch:
+
+env:
+
+jobs:
+  kind:
+    strategy:
+      matrix:
+        connector: ['org.odpi.openmetadata.adapters.repositoryservices.inmemory.repositoryconnector.InMemoryOMRSRepositoryConnectorProvider','org.odpi.openmetadata.adapters.repositoryservices.        graphrepository.repositoryconnector.GraphOMRSRepositoryConnectorProvider']
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup Helm
+        uses: azure/setup-helm@v3
+      - uses: actions/checkout@v3
+        name: checkout code
+      - uses: helm/kind-action@v1
+        name: setup kind
+        with:
+          cluster_name: cts
+          wait: 120
+      - name: Check k8s cluster
+        run: |
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+      - name: Setup Egeria Repo & install CTS chart
+        run: |
+          helm repo add egeria https://odpi.github.io/egeria-charts
+          helm dep update egeria-database-connector-test
+          helm install egeria/egeria-cts --set tut.connectorProvider=${{ matrix.connector }}
+      - name: Check Chart installed & running
+        run: |
+          helm list
+          kubectl get pods
+      - name: Wait for & gather results
+        run: |
+          echo "Coming soon!"
+          
