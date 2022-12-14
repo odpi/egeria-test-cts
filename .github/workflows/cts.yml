@@ -20,7 +20,7 @@ jobs:
         name: setup kind
         with:
           cluster_name: cts
-          wait: 120
+          wait: 120s
       - name: Check k8s cluster
         run: |
           kubectl cluster-info
