@@ -10,7 +10,8 @@ jobs:
     strategy:
       matrix:
         connector: ['org.odpi.openmetadata.adapters.repositoryservices.inmemory.repositoryconnector.InMemoryOMRSRepositoryConnectorProvider','org.odpi.openmetadata.adapters.repositoryservices.graphrepository.repositoryconnector.GraphOMRSRepositoryConnectorProvider']
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: setup Helm
         uses: azure/setup-helm@v3
