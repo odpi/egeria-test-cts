@@ -95,6 +95,11 @@ jobs:
           sleep 1
           done
           kubectl wait pods --selector=app.kubernetes.io/component=report --for condition=Ready --timeout=24h
+      # When the job is ready it needs to retrieve all the cts results. no status is report, so it's tail/parse
+      # the log, or add a random sleep. Errr on the long side = 3.5 minutes
+      - name: Wait for report retrieval by job
+        run: |
+          sleep 210
       - name: Gather CTS report
         run: |
           kubectl exec $(kubectl get pod -l app.kubernetes.io/component=report) -- sh -c 'cat /export/pipe' | tar -xvf -
