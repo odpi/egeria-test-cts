@@ -102,7 +102,7 @@ jobs:
           sleep 210
       - name: Gather CTS report
         run: |
-          kubectl exec $(kubectl get pod -l app.kubernetes.io/component=report) -- sh -c 'cat /export/pipe' | tar -xvf -
+          kubectl exec $(kubectl get pod -l app.kubernetes.io/component=report --no-headers -o custom-columns=":metadata.name") -- sh -c 'cat /export/pipe' | tar -xvf -
       - name: Upload CTS report
         uses: actions/upload-artifact@v3
         with:
