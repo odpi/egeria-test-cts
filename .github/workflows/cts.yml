@@ -49,20 +49,40 @@ jobs:
           kubectl get pods
       - name: Wait for Strimzi Operator to be ready
         run: |
+          until kubectl get pod -l strimzi.io/kind=cluster-operator -o go-template='{{.items | len}}' | grep -qxF 1; do
+          echo "Waiting for pod"
+          sleep 1
+          done
           kubectl wait pods --selector=strimzi.io/kind=cluster-operator --for condition=Ready --timeout=10m
       - name: Wait for Zookeeper to be ready
         run: |
+          until kubectl get pod -l app.kubernetes.io/name=zookeeper -o go-template='{{.items | len}}' | grep -qxF 1; do
+          echo "Waiting for pod"
+          sleep 1
+          done
           kubectl wait pods --selector=app.kubernetes.io/name=zookeeper --for condition=Ready --timeout=10m
       - name: Wait for Kafka to be ready
         run: |
+          until kubectl get pod -l app.kubernetes.io/name=kafka -o go-template='{{.items | len}}' | grep -qxF 1; do
+          echo "Waiting for pod"
+          sleep 1
+          done
           kubectl wait pods --selector=app.kubernetes.io/name=kafka --for condition=Ready --timeout=10m
       - name: Wait for CTS platform to be ready
         run: |
+          until kubectl get pod -l app.kubernetes.io/component=platform -o go-template='{{.items | len}}' | grep -qxF 1; do
+          echo "Waiting for pod"
+          sleep 1
+          done
           kubectl wait pods --selector=app.kubernetes.io/component=platform --for condition=Ready --timeout=10m
       # We could wait for the init job to complete, but the risk is it gets purged - so for now, skip this check
       - name: Wait for CTS results to be available (this takes a long time - HOURS)
         # This waits for the report pod to go ready - this means results are ready
         run: |
+          until kubectl get pod -l app.kubernetes.io/component=report -o go-template='{{.items | len}}' | grep -qxF 1; do
+          echo "Waiting for pod"
+          sleep 1
+          done
           kubectl wait pods --selector=app.kubernetes.io/component=report --for condition=Ready --timeout=24h
       - name: Gather CTS report
         run: |
