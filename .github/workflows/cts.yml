@@ -8,7 +8,7 @@ on:
       egeria_version:
         description: "Egeria Container image version"
         required: true
-        default: 2.15-SNAPSHOT
+        default: 3.15-SNAPSHOT
 jobs:
   kind:
     strategy:
@@ -16,6 +16,9 @@ jobs:
         connector: ['org.odpi.openmetadata.adapters.repositoryservices.inmemory.repositoryconnector.InMemoryOMRSRepositoryConnectorProvider','org.odpi.openmetadata.adapters.repositoryservices.graphrepository.repositoryconnector.GraphOMRSRepositoryConnectorProvider']
     runs-on: ubuntu-22.04
     steps:
+      - name: Report version
+        run: |
+          echo "Starting test run for: ${{ github.event.inputs.egeria_version }}"
       - name: setup Helm
         uses: azure/setup-helm@v3
         env:
