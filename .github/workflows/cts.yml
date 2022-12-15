@@ -9,6 +9,11 @@ on:
         description: "Egeria Container image version"
         required: true
         default: 3.15-SNAPSHOT
+      debug:
+        description: "Pause for SSH access?"
+        type: boolean
+        required: true
+        default: false
 jobs:
   kind:
     strategy:
@@ -43,13 +48,12 @@ jobs:
           helm install cts egeria/egeria-cts --set-string tut.connectorProvider=${{ matrix.connector }} --set-string imageDefaults.tag=${{ github.event.inputs.egeria_version }} --set-string resources.requests.memory=4Gi --set-string resources.limits.memory=7Gi --set resources.requests.cpu=0m --set records=1 --set strimzi-kafka-operator.resources.requests.cpu=0m
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # === debug
-      #- name: Setup upterm session
-      #  uses: lhotari/action-upterm@v1
-      #  with:
-      #    ## limits ssh access and adds the ssh public key for the user which triggered the workflow
-      #    limit-access-to-actor: true
-      # === debug
+      - name: Setup upterm session for debug via ssh
+        if: ${{ github.event.inputs.debug == 'true' }}
+        uses: lhotari/action-upterm@v1
+        with:
+          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+          limit-access-to-actor: true
       - name: Check Chart installed & running
         run: |
           helm list
