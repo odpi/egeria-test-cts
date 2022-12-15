@@ -10,8 +10,7 @@ jobs:
     strategy:
       matrix:
         connector: ['org.odpi.openmetadata.adapters.repositoryservices.inmemory.repositoryconnector.InMemoryOMRSRepositoryConnectorProvider','org.odpi.openmetadata.adapters.repositoryservices.graphrepository.repositoryconnector.GraphOMRSRepositoryConnectorProvider']
-    #runs-on: ubuntu-latest
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     steps:
       - name: setup Helm
         uses: azure/setup-helm@v3
@@ -37,6 +36,13 @@ jobs:
           helm install cts egeria/egeria-cts --set-string tut.connectorProvider=${{ matrix.connector }} --set-string imageDefaults.tag="3.14" --set-string resources.requests.memory=4Gi --set-string resources.limits.memory=6Gi --set records="1"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # === debug
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        with:
+          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+          limit-access-to-actor: true
+      # === debug
       - name: Check Chart installed & running
         run: |
           helm list
