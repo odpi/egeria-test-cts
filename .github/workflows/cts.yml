@@ -15,13 +15,16 @@ jobs:
     steps:
       - name: setup Helm
         uses: azure/setup-helm@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v3
         name: checkout code
       - uses: helm/kind-action@v1
         name: setup kind
         with:
           cluster_name: cts
-          wait: 600s
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Check k8s cluster
         run: |
           kubectl cluster-info
