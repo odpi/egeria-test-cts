@@ -24,6 +24,7 @@ on:
 jobs:
   kind:
     strategy:
+      fail-fast: false
       matrix:
         connector: ['org.odpi.openmetadata.adapters.repositoryservices.inmemory.repositoryconnector.InMemoryOMRSRepositoryConnectorProvider','org.odpi.openmetadata.adapters.repositoryservices.graphrepository.repositoryconnector.GraphOMRSRepositoryConnectorProvider']
     runs-on: ubuntu-22.04
