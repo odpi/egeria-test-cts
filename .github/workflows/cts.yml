@@ -112,3 +112,6 @@ jobs:
         with:
           name: CTS report ${{ matrix.connector }}
           path: export/cts.tar.gz
+      - name: Analyze Results
+        run: |
+          python3 scripts/cts-analyze.py
