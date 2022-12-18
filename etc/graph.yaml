@@ -1,0 +1,2 @@
+imageDefaults:
+  pullPolicy: Always

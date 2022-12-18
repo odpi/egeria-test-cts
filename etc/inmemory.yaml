@@ -1,0 +1,4 @@
+tut: 
+  connectorProvider: "org.odpi.openmetadata.adapters.repositoryservices.inmemory.repositoryconnector.InMemoryOMRSRepositoryConnectorProvider"
+imageDefaults:
+  pullPolicy: Always
