@@ -26,12 +26,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        connector: ['org.odpi.openmetadata.adapters.repositoryservices.inmemory.repositoryconnector.InMemoryOMRSRepositoryConnectorProvider','org.odpi.openmetadata.adapters.repositoryservices.graphrepository.repositoryconnector.GraphOMRSRepositoryConnectorProvider']
+        connector: ['inmemory','graph','xtdb']
     runs-on: ubuntu-22.04
     steps:
       - name: Report version
         run: |
-          echo "Starting test run for: ${{ github.event.inputs.egeria_version }}"
+          echo "Starting test run for: ${{ github.event.inputs.egeria_version }} with ${{ matrix.connector }}"
       - name: setup Helm
         uses: azure/setup-helm@v3
         env:
@@ -53,7 +53,7 @@ jobs:
       - name: Setup Egeria Repo & install CTS chart
         run: |
           helm repo add egeria https://odpi.github.io/egeria-charts
-          helm install cts egeria/egeria-cts --set-string tut.connectorProvider=${{ matrix.connector }} --set-string imageDefaults.tag=${{ github.event.inputs.egeria_version }} --set-string resources.requests.memory=4Gi --set-string resources.limits.memory=7Gi --set resources.requests.cpu=0m --set records=${{ github.event.inputs.records }} --set strimzi-kafka-operator.resources.requests.cpu=0m
+          helm install cts egeria/egeria-cts --set-string imageDefaults.tag=${{ github.event.inputs.egeria_version }} --set-string resources.requests.memory=4Gi --set-string resources.limits.memory=7Gi --set resources.requests.cpu=0m --set records=${{ github.event.inputs.records }} --set strimzi-kafka-operator.resources.requests.cpu=0m -f etc/${{ matrix.connector }}.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup upterm session for debug via ssh
@@ -122,7 +122,7 @@ jobs:
       - name: Add results to summary
         if: always()
         run: |
-          echo "**${{ matrix.connector }}**" >> ${GITHUB_STEP_SUMMARY}
+          echo "**Egeria ${{ github.event.inputs.egeria_version }} with ${{ matrix.connector }} repository**" >> ${GITHUB_STEP_SUMMARY}
           echo "\`\`\`" >> ${GITHUB_STEP_SUMMARY}
           cat /tmp/$$.tmp >> ${GITHUB_STEP_SUMMARY}
           echo "\`\`\`" >> ${GITHUB_STEP_SUMMARY}
