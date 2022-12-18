@@ -119,12 +119,12 @@ jobs:
           path: export/cts.tar.gz
       - name: Analyze Results
         run: |
-          python3 scripts/cts-analyze.py > /tmp/$$.tmp 2>&1
+          python3 scripts/cts-analyze.py > analysis.txt 2>&1
       - name: Add results to summary
         if: always()
         run: |
           echo "**Egeria ${{ github.event.inputs.egeria_version }} with ${{ matrix.connector }} repository**" >> ${GITHUB_STEP_SUMMARY}
           echo "\`\`\`" >> ${GITHUB_STEP_SUMMARY}
-          cat /tmp/$$.tmp >> ${GITHUB_STEP_SUMMARY}
+          cat analysis.txt  >> ${GITHUB_STEP_SUMMARY}
           echo "\`\`\`" >> ${GITHUB_STEP_SUMMARY}
 
