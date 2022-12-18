@@ -118,4 +118,9 @@ jobs:
           path: export/cts.tar.gz
       - name: Analyze Results
         run: |
-          python3 scripts/cts-analyze.py
+          python3 scripts/cts-analyze.py 2>&1 | tee /tmp/$$.tmp
+          echo "**${{ matrix.connector }}**" >> ${GITHUB_STEP_SUMMARY}
+          echo "\`\`\`" >> ${GITHUB_STEP_SUMMARY}
+          cat /tmp/$$.tmp >> ${GITHUB_STEP_SUMMARY}
+          echo "\`\`\`" >> ${GITHUB_STEP_SUMMARY}
+

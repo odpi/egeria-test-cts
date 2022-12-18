@@ -60,7 +60,7 @@ for p in profileSummaries:
     fullgood+=totalgood;
     fullbad+=totalbad;
 
-    print ("%30s %17s %25s [ %6i / %6i ]" % (name,priority,conformanceStatus,totalgood,totalbad));
+    print ("%30s %17s %26s [ %6i / %6i ]" % (name,priority,conformanceStatus,totalgood,totalbad));
 
 if (fullbad==0):
     print("\nPASS [%i/%i]" % (fullgood,fullbad));
