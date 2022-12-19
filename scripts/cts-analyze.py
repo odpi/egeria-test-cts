@@ -65,6 +65,6 @@ for p in profileSummaries:
 if totalBad == 0:
     print("\nPASS [%i/%i]" % (totalGood, totalBad))
 else:
-    print("\nFAIL [%i/%i]" % (totalGood, totalGood))
+    print("\nFAIL [%i/%i]" % (totalGood, totalBad))
 
 sys.exit(totalBad != 0)
