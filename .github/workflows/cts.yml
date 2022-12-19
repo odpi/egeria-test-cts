@@ -112,11 +112,16 @@ jobs:
       - name: Gather CTS report
         run: |
           kubectl exec $(kubectl get pod -l app.kubernetes.io/component=report --no-headers -o custom-columns=":metadata.name") -- sh -c 'cat /export/pipe' | tar -xvf -
-      - name: Upload CTS report
+      - name: capture k8s logs from platform
+        run : |
+          kubectl logs -l app.kubernetes.io/component=report --since=6h > platform.log
+      - name: Upload CTS report & other useful content
         uses: actions/upload-artifact@v3
         with:
           name: CTS report ${{ matrix.connector }}
-          path: export/cts.tar.gz
+          path: |
+            export/cts.tar.gz
+            platform.log
       - name: Analyze Results
         run: |
           python3 scripts/cts-analyze.py > analysis.txt 2>&1
