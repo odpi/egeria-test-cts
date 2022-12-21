@@ -54,7 +54,7 @@ jobs:
       - name: Setup Egeria Repo & install CTS chart
         run: |
           helm repo add egeria https://odpi.github.io/egeria-charts
-          helm install cts egeria/egeria-cts --set-string imageDefaults.tag=${{ github.event.inputs.egeria_version || 'latest' }} --set-string resources.requests.memory=4Gi --set-string resources.limits.memory=7Gi --set resources.requests.cpu=0m --set records=${{ github.event.inputs.records || 5 }} --set strimzi-kafka-operator.resources.requests.cpu=0m -f etc/${{ matrix.connector }}.yaml --timeout=10m
+          helm install cts egeria/egeria-cts --set-string imageDefaults.tag=${{ github.event.inputs.egeria_version || 'latest' }} --set-string resources.requests.memory=4Gi --set-string resources.limits.memory=7Gi --set resources.requests.cpu=0m --set records=${{ github.event.inputs.records || 5 }} --set strimzi-kafka-operator.resources.requests.cpu=0m -f etc/${{ matrix.connector }}.yaml --timeout=10m --devel
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup upterm session for debug via ssh
