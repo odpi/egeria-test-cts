@@ -13,6 +13,10 @@ on:
         description: "records (scale of tests)"
         required: true
         default: 5
+      runner:
+        description: "runner (ie custom external cluster)"
+        required: true
+        default: ubuntu-latest
       debug:
         description: "Pause for SSH access?"
         type: boolean
@@ -28,7 +32,7 @@ jobs:
       fail-fast: false
       matrix:
         connector: ['inmemory','graph','xtdb']
-    runs-on: ubuntu-22.04
+    runs-on: ${{ github.event.inputs.runner || 'ubuntu-latest' }}
     steps:
       - name: Report version
         run: |
