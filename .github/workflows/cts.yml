@@ -26,11 +26,11 @@ on:
   schedule:
     - cron: '30 2 * * *'
 jobs:
-  # This forces a container for every step - allows to work against a k8s based custom runner
-  container:
-    image: ubuntu
   kind:
     name: Run CTS
+    # This forces a container for every step - allows to work against a k8s based custom runner
+    container:
+      image: ubuntu
     strategy:
       fail-fast: false
       matrix:
