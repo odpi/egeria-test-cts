@@ -28,9 +28,6 @@ on:
 jobs:
   kind:
     name: Run CTS
-    # This forces a container for every step - allows to work against a k8s based custom runner
-    container:
-      image: node:14.16
     strategy:
       fail-fast: false
       matrix:
