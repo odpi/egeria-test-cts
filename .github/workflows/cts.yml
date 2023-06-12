@@ -58,7 +58,7 @@ jobs:
       - name: Setup Egeria Repo & install CTS chart
         run: |
           helm repo add egeria https://odpi.github.io/egeria-charts
-          helm install cts egeria/egeria-cts --set-string imageDefaults.tag=${{ github.event.inputs.egeria_version || 'latest' }} --set-string resources.requests.memory=4Gi --set-string resources.limits.memory=7Gi --set resources.requests.cpu=0m --set records=${{ github.event.inputs.records || 5 }} --set strimzi-kafka-operator.resources.requests.cpu=0m -f etc/${{ matrix.connector }}.yaml --timeout=10m --devel
+          helm install cts egeria/egeria-cts --set-string imageDefaults.tag=${{ github.event.inputs.egeria_version || 'latest' }} --set-string resources.requests.memory=4Gi --set-string resources.limits.memory=7Gi --set resources.requests.cpu=0m --set records=${{ github.event.inputs.records || 5 }} --set strimzi-kafka-operator.resources.requests.cpu=0m -f etc/${{ matrix.connector }}.yaml --timeout=5m --devel
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup upterm session for debug via ssh
@@ -77,28 +77,28 @@ jobs:
           echo "Waiting for pod"
           sleep 1
           done
-          kubectl wait pods --selector=strimzi.io/kind=cluster-operator --for condition=Ready --timeout=10m
+          kubectl wait pods --selector=strimzi.io/kind=cluster-operator --for condition=Ready --timeout=5m
       - name: Wait for Zookeeper to be ready
         run: |
           until kubectl get pod -l app.kubernetes.io/name=zookeeper -o go-template='{{.items | len}}' | grep -qxF 1; do
           echo "Waiting for pod"
           sleep 1
           done
-          kubectl wait pods --selector=app.kubernetes.io/name=zookeeper --for condition=Ready --timeout=10m
+          kubectl wait pods --selector=app.kubernetes.io/name=zookeeper --for condition=Ready --timeout=5m
       - name: Wait for Kafka to be ready
         run: |
           until kubectl get pod -l app.kubernetes.io/name=kafka -o go-template='{{.items | len}}' | grep -qxF 1; do
           echo "Waiting for pod"
           sleep 1
           done
-          kubectl wait pods --selector=app.kubernetes.io/name=kafka --for condition=Ready --timeout=10m
+          kubectl wait pods --selector=app.kubernetes.io/name=kafka --for condition=Ready --timeout=5m
       - name: Wait for CTS platform to be ready
         run: |
           until kubectl get pod -l app.kubernetes.io/component=platform -o go-template='{{.items | len}}' | grep -qxF 1; do
           echo "Waiting for pod"
           sleep 1
           done
-          kubectl wait pods --selector=app.kubernetes.io/component=platform --for condition=Ready --timeout=10m
+          kubectl wait pods --selector=app.kubernetes.io/component=platform --for condition=Ready --timeout=5m
       # We could wait for the init job to complete, but the risk is it gets purged - so for now, skip this check
       - name: Wait for CTS results to be available (this takes a long time - HOURS)
         # This waits for the report pod to go ready - this means results are ready
@@ -107,7 +107,12 @@ jobs:
           echo "Waiting for pod"
           sleep 1
           done
-          kubectl wait pods --selector=app.kubernetes.io/component=report --for condition=Ready --timeout=24h
+          # -- note on timeouts --
+          # Above we've used 25 mins. Allow 5 mins for logging retrieval, + some for attachments so allow 5:20 hours here to be safe
+          # But note that kubectl exec timeouts are tricky - combo of finding running pod, connecting to pod, and running command, so are omitted below
+          # TODO: Could be calculated based on start time of job to maximise available job run time
+          # -- end --
+          kubectl wait pods --selector=app.kubernetes.io/component=report --for condition=Ready --timeout=320m
       # When the job is ready it needs to retrieve all the cts results. no status is report, so it's tail/parse
       # the log, or add a random sleep. Errr on the long side = 3.5 minutes
       - name: Wait for report retrieval by job
@@ -117,9 +122,11 @@ jobs:
         run: |
           kubectl exec $(kubectl get pod -l app.kubernetes.io/component=report --no-headers -o custom-columns=":metadata.name") -- sh -c 'cat /export/pipe' | tar -xvf -
       - name: capture k8s logs from platform
+        if: always()
         run : |
           kubectl logs -l app.kubernetes.io/component=platform --since=6h > platform.log
       - name: Upload CTS report & other useful content
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: CTS report ${{ matrix.connector }}
