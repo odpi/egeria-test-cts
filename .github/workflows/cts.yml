@@ -105,7 +105,7 @@ jobs:
           echo "Waiting for pod"
           sleep 1
           done
-          kubectl wait pods --selector=app.kubernetes.io/component=init --for condition=complete --timeout=5m
+          kubectl wait jobs --selector=app.kubernetes.io/component=init --for condition=complete --timeout=5m
       - name: Wait for CTS results to be available (this takes a long time - HOURS)
         # This waits for the report pod to go ready - this means results are ready
         run: |
